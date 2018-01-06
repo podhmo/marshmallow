@@ -94,7 +94,7 @@ class Marshaller(ErrorStore):
         ErrorStore.__init__(self)
 
     def serialize(self, obj, fields_dict, many=False,
-                  accessor=None, dict_class=dict, index_errors=True, index=None):
+                  accessor=None, dict_class=dict, index_errors=True, index=None, iterator=iterate_fields_dict):
         """Takes raw data (a dict, list, or other object) and a dict of
         fields to output and serializes the data based on those fields.
 
@@ -132,7 +132,7 @@ class Marshaller(ErrorStore):
                 )
             return ret
         items = []
-        for attr_name, field_obj in iteritems(fields_dict):
+        for attr_name, field_obj in iterator(obj, fields_dict):
             if getattr(field_obj, 'load_only', False):
                 continue
 
