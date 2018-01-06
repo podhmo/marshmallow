@@ -16,7 +16,7 @@ from decimal import Decimal, ROUND_HALF_EVEN, Context, Inexact
 from email.utils import formatdate, parsedate
 from pprint import pprint as py_pprint
 
-from marshmallow.compat import binary_type, text_type
+from marshmallow.compat import binary_type, text_type, iteritems
 
 
 dateutil_available = False
@@ -404,3 +404,7 @@ def get_func_args(func):
 
 def if_none(value, default):
     return value if value is not None else default
+
+
+def iterate_fields_dict(data, fields_dict):
+    return iteritems(fields_dict)

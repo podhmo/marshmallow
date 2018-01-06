@@ -382,6 +382,9 @@ class BaseSchema(base.SchemaABC):
         """
         return utils.get_value(obj, attr, default)
 
+    def get_marshalling_iterator(self):
+        return utils.iterate_fields_dict
+
     ##### Serialization/Deserialization API #####
 
     def dump(self, obj, many=None, update_fields=True, **kwargs):
@@ -578,6 +581,7 @@ class BaseSchema(base.SchemaABC):
                     partial=partial,
                     dict_class=self.dict_class,
                     index_errors=self.opts.index_errors,
+                    iterator=self.get_marshalling_iterator(),
                 )
             except ValidationError as error:
                 result = error.data

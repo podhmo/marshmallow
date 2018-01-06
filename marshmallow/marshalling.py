@@ -10,7 +10,7 @@ and from primitive types.
 
 from __future__ import unicode_literals
 
-from marshmallow.utils import is_collection, missing, set_value
+from marshmallow.utils import is_collection, missing, set_value, iterate_fields_dict
 from marshmallow.compat import text_type, iteritems
 from marshmallow.exceptions import (
     ValidationError,
@@ -212,7 +212,7 @@ class Unmarshaller(ErrorStore):
                     errors.setdefault(field_name, []).append(text_type(err))
 
     def deserialize(self, data, fields_dict, many=False, partial=False,
-            dict_class=dict, index_errors=True, index=None):
+                    dict_class=dict, index_errors=True, index=None, iterator=iterate_fields_dict):
         """Deserialize ``data`` based on the schema defined by ``fields_dict``.
 
         :param dict data: The data to deserialize.
@@ -251,7 +251,7 @@ class Unmarshaller(ErrorStore):
         if data is not None:
             partial_is_collection = is_collection(partial)
             ret = dict_class()
-            for attr_name, field_obj in iteritems(fields_dict):
+            for attr_name, field_obj in iterator(data, fields_dict):
                 if field_obj.dump_only:
                     continue
                 try:
@@ -296,7 +296,10 @@ class Unmarshaller(ErrorStore):
                     index=(index if index_errors else None)
                 )
                 if value is not missing:
-                    key = fields_dict[attr_name].attribute or attr_name
+                    if attr_name in fields_dict:
+                        key = fields_dict[attr_name].attribute or attr_name
+                    else:
+                        key = attr_name
                     set_value(ret, key, value)
         else:
             ret = None
